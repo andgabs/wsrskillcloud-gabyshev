@@ -86,10 +86,7 @@
                     - "{{ skillcloud.users }}"
                     - "{{ skillcloud.passwords }}"
           - name: SSH port add 1834 no restart
-            shell: 
-          - name: SSH key allow
-            shell:
-          - name: SSH AAAA
-            shell:
-
+            copy:
+                    src: sshd_config
+                    dest: /etc/ssh/sshd_config
 
