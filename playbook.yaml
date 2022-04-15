@@ -89,4 +89,16 @@
             copy:
                     src: sshd_config
                     dest: /etc/ssh/sshd_config
+          - name: Create skillcloud-nginx
+            file:
+                    path: /skillcloud-nginx
+                    state: directory
+          - name: Install docker
+            apt:
+                    name: docker
+          - name: Install docker-compose
+            apt:
+                    name: docker-compose
+
+
 
