@@ -1,0 +1,95 @@
+---
+- hosts: localhost
+  tasks:
+          - name: Git clone
+            ansible.builtin.git:
+                    repo: http://github.com/Jeniston14/wsr-skillcloud
+                    dest: /wsr-skillcloud
+          - name: add project-1
+            add_host:
+                    name: 'project-1'
+                    groups: 'project'
+                    ansible_ssh_user: 'root'
+                    ansible_ssh_pass: 'toor'
+          - name: add project-2
+            add_host:
+                    name: 'project-2'
+                    groups: 'project'
+                    ansible_ssh_user: 'root'
+                    ansible_ssh_pass: 'toor'
+          - name: add project-3
+            add_host:
+                    name: 'project-3'
+                    groups: 'project'
+                    ansible_ssh_user: 'root'
+                    ansible_ssh_pass: 'toor'
+          - name: dbug groups
+            debug: var=groups
+- hosts: project
+  tasks:
+          - name: apt update
+            apt:
+                    update_cache: yes
+          - name: install curl
+            apt:
+                    name: curl
+- hosts: localhost
+  tasks:
+          - name: Install community.general
+            shell: ansible-galaxy collection install community.general
+- hosts: project
+  tasks:
+          - name: UFW enabled
+            community.general.ufw:
+                    state: enabled
+                    policy: allow
+          - name: UFW allwo port 80
+            community.general.ufw:
+                    rule: allow
+                    port: '80'
+                    proto: tcp
+          - name: UFW allwo port 8080
+            community.general.ufw:
+                    rule: allow
+                    port: '8080'
+                    proto: tcp
+          - name: UFW allwo port 1834
+            community.general.ufw:
+                    rule: allow
+                    port: '1834'
+                    proto: tcp
+
+- hosts: localhost
+  tasks:
+          - name: Decrypt files
+            shell: ansible-vault decrypt --vault-id secret /wsr-skillcloud/Users/privvars.yml
+          - name: Include vars
+            include_vars:
+                    file: /wsr-skillcloud/Users/privvars.yml
+- hosts: project
+  tasks:
+          - name: Include vars
+            include_vars:
+                    file: /wsr-skillcloud/Users/privvars.yml
+          - name: Add users
+            user:
+                    name: "{{ item.0 }}"
+                    password: "{{ item.1 | password_hash('sha512') }}"
+            with_together:
+                    - "{{ skillcloud.users }}"
+                    - "{{ skillcloud.passwords }}"
+          - name: Add users key
+            authorized_key:
+                    user: "{{ item.0 }}"
+                    key: "{{ skillcloud.publickey }}"
+            with_together:
+                    - "{{ skillcloud.users }}"
+                    - "{{ skillcloud.passwords }}"
+          - name: SSH port add 1834 no restart
+            shell: 
+          - name: SSH key allow
+            shell:
+          - name: SSH AAAA
+            shell:
+
+
